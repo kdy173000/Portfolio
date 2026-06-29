@@ -4125,6 +4125,22 @@ document.querySelectorAll(".reveal").forEach((element) => observer.observe(eleme
     });
   }
 
+  function expandDefaultProjectWork() {
+    document.querySelectorAll('[data-project-work]').forEach((body) => {
+      if (body.id === 'ss-01') return;
+
+      const slot = body.querySelector('.project-work-slot');
+      const button = body.querySelector('.project-view-button') || (slot?.id ? document.querySelector(`.project-view-button[aria-controls="${slot.id}"]`) : null);
+      if (!slot || !button) return;
+
+      renderProjectWork(body);
+      slot.hidden = false;
+      body.classList.add('is-open');
+      slot.classList.add('is-open');
+      setProjectButton(button, true);
+    });
+  }
+
   const responsiveButtonQuery = window.matchMedia('(max-width: 768px)');
 
   function getButtonWorkBody(button) {
@@ -4170,6 +4186,7 @@ document.querySelectorAll(".reveal").forEach((element) => observer.observe(eleme
     toggleProjectWork(getButtonWorkBody(button));
   });
 
+  expandDefaultProjectWork();
   syncResponsiveProjectButtons();
   responsiveButtonQuery.addEventListener?.('change', syncResponsiveProjectButtons);
   if (!responsiveButtonQuery.addEventListener) responsiveButtonQuery.addListener(syncResponsiveProjectButtons);
