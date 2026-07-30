@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DD | Package Design Service</title>
+<meta name="description" content="브랜드와 생산을 함께 고려하는 DD 패키지 디자인 서비스 소개 및 예상 견적 안내입니다.">
+
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Serif+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" as="style" crossorigin
+  href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+<style>
+  :root{
+    --bg:#ffffff;
+    --bg-subtle:#f5f5f5;
+    --bg-tint:#fff3e8;
+    --ink:#1a1a1a;
+    --ink-soft:#767676;
+    --ink-faint:#a8a8a8;
+    --line:#e6e6e6;
+    --line-strong:#1a1a1a;
+    --accent:#f97316;
+    --accent-ink:#7a3406;
+    --ease:cubic-bezier(.22,1,.36,1);
+    --dur-fast:200ms;
+    --dur-base:300ms;
+    --sans:"Inter", "Pretendard Variable", "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --kr:"Pretendard Variable", "Pretendard", var(--sans);
+    --weight-regular:300;
+    --weight-medium:500;
+    --weight-semibold:600;
+    --weight-bold:700;
+    --type-hero:clamp(40px, 5.4vw, 76px);
+    --type-section:clamp(24px, 3.4vw, 48px);
+    --type-card-title:clamp(18px, 2.4vw, 28px);
+    --type-body-large:17px;
+    --type-body:clamp(14px, 1.05vw, 16px);
+    --type-small:12px;
+    --type-label:11px;
+    --leading-hero:1.16;
+    --leading-title:1.25;
+    --leading-body:1.7;
+    --tracking-hero:-.01em;
+    --tracking-title:-.01em;
+    --tracking-label:.2em;
+    --space-section:130px;
+    --space-section-mobile:90px;
+    --content-width:1180px;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:var(--kr);
+    font-weight:var(--weight-regular);
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+    line-height:var(--leading-body);
+    letter-spacing:0;
+    word-break:keep-all;
+  }
+  img{max-width:100%; display:block;}
+  a{color:inherit; text-decoration:none;}
+  button,input,textarea,select{font:inherit;}
+  section{position:relative;}
+  .wrap{
+    max-width:var(--content-width);
+    margin:0 auto;
+    padding:0 40px;
+  }
+  .eyebrow{
+    margin:0 0 18px;
+    font-family:var(--sans);
+    font-size:var(--type-label);
+    font-weight:var(--weight-medium);
+    letter-spacing:var(--tracking-label);
+    text-transform:uppercase;
+    color:var(--accent);
+    display:block;
+  }
+  h1,h2,h3{font-family:var(--kr); font-weight:var(--weight-semibold); letter-spacing:var(--tracking-title); line-height:var(--leading-title);}
+  .num{font-variant-numeric:tabular-nums;}
+
+  /* reveal helpers */
+  .reveal{opacity:0; transform:translateY(28px);}
+
+  /* ---------- NAV ---------- */
+  header{
+    position:fixed; top:0; left:0; right:0; z-index:100;
+    height:64px;
+    padding:0 clamp(20px, 4vw, 56px);
+    display:flex; justify-content:space-between; align-items:center;
+    background:rgba(255,255,255,.92);
+    backdrop-filter:blur(12px);
+    border-bottom:1px solid var(--line);
+    color:var(--ink);
+  }
+  header .brand{font-family:var(--sans); font-size:12px; font-weight:var(--weight-semibold); letter-spacing:.16em; text-transform:uppercase;}
+  header nav{display:flex; gap:clamp(24px, 3.4vw, 48px); font-family:var(--sans); font-size:11px; font-weight:var(--weight-medium); letter-spacing:.12em; text-transform:uppercase; color:var(--ink-soft);}
+  header nav a{transition:color var(--dur-fast) var(--ease);}
+  header nav a:hover{color:var(--ink);}
+
+  /* ---------- HERO ---------- */
+  .hero{
+    min-height:100vh;
+    display:flex; flex-direction:column; justify-content:center;
+    padding:104px clamp(20px, 5vw, 72px) 88px;
+    background:var(--bg);
+  }
+  .hero-grid{
+    max-width:var(--content-width); margin:0 auto; width:100%;
+    display:grid; grid-template-columns:1.15fr .85fr; gap:60px; align-items:end;
+  }
+  .hero h1{
+    margin:0;
+    font-size:var(--type-hero);
+    font-weight:var(--weight-bold);
+    line-height:var(--leading-hero);
+    letter-spacing:var(--tracking-hero);
+  }
+  .hero h1 span{display:block; font:inherit; white-space:nowrap;}
+  .hero h1 .hero-line-screen{color:var(--ink);}
+  .hero h1 .hero-line-field{color:var(--accent);}
+  .hero p{
+    margin:24px 0 0;
+    font-size:var(--type-body-large);
+    font-weight:var(--weight-medium);
+    color:var(--ink-soft);
+    max-width:440px;
+    line-height:1.6;
+  }
+  .hero-visual{
+    position:relative;
+    aspect-ratio:3/4;
+    background:var(--bg-subtle);
+    border:1px solid var(--line);
+    overflow:hidden;
+  }
+  /* Fireball packaging mockup — isolated hero artwork */
+  .fbx-stage{
+    position:absolute; inset:0; overflow:hidden;
+    background:
+      linear-gradient(135deg,rgba(255,255,255,.78),transparent 42%),
+      repeating-linear-gradient(0deg,transparent 0 45px,rgba(0,0,0,.025) 46px),
+      #f3f3f0;
+  }
+  .fbx-orbit{
+    position:absolute; width:82%; aspect-ratio:1; left:8%; top:9%;
+    border:1px solid #d0d0cc; border-radius:50%;
+  }
+  .fbx-object{position:absolute; box-shadow:0 28px 62px rgba(0,0,0,.17);}
+  .fbx-black{
+    width:48%; height:48%; left:18%; top:22%; padding:7%;
+    background:#161616; color:#fff; transform:rotate(-5deg);
+    display:flex; flex-direction:column;
+  }
+  .fbx-black small,.fbx-black .fbx-foot{
+    color:#989898; font-size:clamp(5px,.55vw,8px); font-weight:600;
+    letter-spacing:.18em; text-transform:uppercase;
+  }
+  .fbx-black strong{
+    margin:auto 0; font-size:clamp(18px,2.25vw,35px);
+    line-height:.88; letter-spacing:-.06em;
+  }
+  .fbx-black strong em{font-style:normal; color:var(--accent);}
+  .fbx-orange{
+    width:38%; height:39%; right:8%; top:31%; padding:5%;
+    background:var(--accent); color:#111; transform:rotate(7deg);
+  }
+  .fbx-orange small{font-size:clamp(5px,.5vw,7px); letter-spacing:.2em;}
+  .fbx-orange strong{
+    position:absolute; right:11%; top:24%; font-size:clamp(12px,1.45vw,21px);
+    writing-mode:vertical-rl;
+  }
+  .fbx-orange b{position:absolute; left:10%; bottom:8%; font-size:clamp(28px,4vw,58px);}
+  .fbx-bottle{
+    width:21%; height:37%; right:29%; top:43%; z-index:3;
+    background:linear-gradient(90deg,#ddd,#fafafa 48%,#c9c9c9);
+    border-radius:15% 15% 25% 25%;
+  }
+  .fbx-cap{
+    position:absolute; width:62%; height:16%; left:19%; top:-12%;
+    background:#171717; border-radius:7px 7px 3px 3px;
+  }
+  .fbx-label{
+    position:absolute; left:12%; right:12%; top:28%; height:42%; padding:10%;
+    background:#fff; border:1px solid #ccc; display:flex; flex-direction:column;
+  }
+  .fbx-label small{font-size:clamp(4px,.45vw,7px); letter-spacing:.16em;}
+  .fbx-label b{font-size:clamp(22px,3.2vw,48px); line-height:1; margin-top:auto;}
+  .fbx-caption{
+    position:absolute; left:5%; right:5%; bottom:3%;
+    display:flex; justify-content:space-between;
+    font-size:clamp(5px,.5vw,8px); letter-spacing:.18em; text-transform:uppercase;
+  }
+  .fbx-black{animation:fbxFloat 7s ease-in-out infinite;}
+  .fbx-orange{animation:fbxFloat 8s 1s ease-in-out infinite;}
+  .fbx-bottle{animation:fbxFloat 6.5s .5s ease-in-out infinite;}
+  @keyframes fbxFloat{50%{translate:0 -10px;}}
+  .hero-cta-row{
+    grid-column:1/-1;
+    margin-top:56px;
+    display:flex; justify-content:space-between; align-items:center;
+    border-top:1px solid var(--line);
+    padding-top:22px;
+  }
+  .hero-cta-label{color:var(--ink-faint);}
+  .marquee-strip{
+    position:relative;
+    width:100%;
+    overflow:hidden;
+    padding-top:clamp(20px, 3vw, 28px);
+    background:var(--bg);
+    mask-image:linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent);
+  }
+  .marquee-track{
+    display:flex; gap:14px; white-space:nowrap;
+    width:max-content;
+    animation:marquee 32s linear infinite;
+  }
+  .marquee-track span{display:flex; flex-shrink:0; align-items:center; gap:14px; font-family:var(--sans); font-size:clamp(13px, 1.4vw, 16px); font-weight:var(--weight-medium); letter-spacing:.02em; color:var(--ink-soft);}
+  .marquee-track .dot{color:inherit;}
+  @keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+  /* ---------- SECTION HEADS ---------- */
+  .section{padding:var(--space-section) 0;}
+  .section-head{max-width:640px; margin-bottom:clamp(40px, 6vw, 80px);}
+  .section-head h2{font-size:var(--type-section); margin:0; font-weight:var(--weight-semibold); letter-spacing:var(--tracking-title);}
+  .section-alt{background:var(--bg-subtle);}
+
+  /* ---------- ABOUT ---------- */
+  .about-grid{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:80px; align-items:start;}
+  .about-grid>*{min-width:0;}
+  .about-copy p{font-size:var(--type-body); font-weight:var(--weight-regular); color:var(--ink-soft); line-height:1.8; margin-bottom:18px;}
+  .stat-list{display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--line); border:1px solid var(--line);}
+  .stat{background:#fff; padding:34px 28px;}
+  .stat:first-child{grid-column:1 / -1;}
+  .stat .num{display:block; font-family:var(--sans); font-size:clamp(24px, 2.5vw, 34px); font-weight:var(--weight-bold); letter-spacing:0; font-variant-numeric:tabular-nums;}
+  .stat .label{display:block; font-family:var(--sans); font-size:var(--type-small); font-weight:var(--weight-medium); text-transform:uppercase; letter-spacing:.08em; color:var(--ink-faint); margin-top:8px; white-space:normal; overflow-wrap:break-word;}
+
+  /* ---------- SERVICE WORKFLOW ---------- */
+  .workflow{display:grid; grid-template-columns:46px 1fr; gap:18px;}
+  .rail{position:relative;}
+  .rail-track{position:absolute; left:23px; top:23px; bottom:23px; width:1px; background:var(--line);}
+  .rail-fill{position:absolute; left:23px; top:23px; width:1px; height:0%; background:var(--accent); transform-origin:top;}
+  .steps{display:flex; flex-direction:column; gap:0;}
+  .step{
+    display:grid; grid-template-columns:46px minmax(0,1fr); gap:18px; align-items:start;
+    padding:24px 0; border-bottom:1px solid var(--line);
+  }
+  .step:first-child{padding-top:0;}
+  .step-num{
+    font-family:var(--sans); font-size:12px; font-weight:var(--weight-medium); letter-spacing:.04em;
+    width:46px; height:46px; flex:0 0 46px; border-radius:50%;
+    border:1px solid var(--line);
+    display:flex; align-items:center; justify-content:center;
+    color:var(--ink-faint);
+    transition:border-color .4s var(--ease), color .4s var(--ease);
+    justify-self:start;
+  }
+  .step.active .step-num{border-color:var(--accent); color:var(--accent);}
+  .step-body{padding:8px 0 0;}
+  .step-body h3{font-size:var(--type-card-title); font-weight:var(--weight-semibold); line-height:1.18;}
+  .step-body p{margin-top:6px; font-size:var(--type-body); font-weight:var(--weight-regular); color:var(--ink-soft); max-width:520px;}
+
+  /* ---------- INTERACTIVE PRICING ---------- */
+  .estimate-layout{display:grid; grid-template-columns:minmax(0,1.3fr) minmax(320px,.7fr); gap:34px; align-items:start;}
+  .selector-panel{display:flex; flex-direction:column; gap:46px; min-width:0;}
+  .selector-group{background:#fff; border:1px solid var(--line);}
+  .selector-heading{padding:24px 28px; border-bottom:1px solid var(--line); display:flex; align-items:end; justify-content:space-between; gap:20px;}
+  .selector-heading span{font-family:var(--sans); font-size:var(--type-label); font-weight:var(--weight-medium); letter-spacing:var(--tracking-label); color:var(--accent); text-transform:uppercase;}
+  .selector-heading h3{font-size:var(--type-card-title); font-weight:var(--weight-semibold); margin-top:7px;}
+  .selector-heading p{font-size:var(--type-small); font-weight:var(--weight-regular); color:var(--ink-faint);}
+  .choice-list{display:flex; flex-direction:column;}
+  #optionChoices{display:grid; grid-template-columns:1fr;}
+  .choice{position:relative; display:grid; grid-template-columns:28px minmax(0,1fr) auto; gap:14px; align-items:center; padding:22px 28px; border-bottom:1px solid var(--line); cursor:pointer; transition:background .25s var(--ease);}
+  .choice:last-child{border-bottom:0;}
+  .choice:hover{background:var(--bg-tint);}
+  .choice input{position:absolute; opacity:0; pointer-events:none;}
+  .control{width:22px; height:22px; border:1px solid #c9c7c2; display:grid; place-items:center; color:#fff; transition:.25s var(--ease);}
+  .control::after{content:'✓'; font-size:13px; opacity:0; transform:scale(.5); transition:.2s var(--ease);}
+  .choice input[type="radio"] + .control{border-radius:50%;}
+  .choice input[type="radio"] + .control::after{content:''; width:8px; height:8px; border-radius:50%; background:#fff;}
+  .choice input:checked + .control{background:var(--accent); border-color:var(--accent);}
+  .choice input:checked + .control::after{opacity:1; transform:scale(1);}
+  .choice-copy strong{font-size:var(--type-body); font-weight:var(--weight-semibold); display:block;}
+  .choice-copy small{display:block; margin-top:6px; color:var(--ink-faint); font-size:var(--type-small); font-weight:var(--weight-regular); line-height:1.6; max-height:0; opacity:0; overflow:hidden; transition:var(--dur-base) var(--ease);}
+  .choice:hover .choice-copy small,.choice:focus-within .choice-copy small{max-height:48px; opacity:1;}
+  .choice-price{font-family:var(--sans); font-size:var(--type-small); font-weight:var(--weight-semibold); letter-spacing:.02em; white-space:nowrap; color:var(--ink-soft);}
+  .choice-price.minus{color:var(--accent);}
+  .service-note{display:flex; gap:10px; padding:15px 28px; background:var(--bg-tint); color:var(--ink-soft); font-size:var(--type-small); font-weight:var(--weight-regular); line-height:1.7;}
+  .service-note b{color:var(--accent-ink); font-weight:var(--weight-semibold); white-space:nowrap;}
+  .info-card{background:var(--bg);}
+  .project-guide-flow{margin:0; padding:0; list-style:none; display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); border-bottom:1px solid var(--line);}
+  .project-guide-flow li{position:relative; isolation:isolate; min-height:170px; padding:17px 18px; border-right:1px solid var(--line); overflow:hidden; transition:background-color .35s ease, border-color .35s ease;}
+  .project-guide-flow li:last-child{border-right:0;}
+  .project-guide-step::before{content:''; position:absolute; inset:1px; z-index:0; pointer-events:none; opacity:0; transform:scale(.98); background:linear-gradient(var(--accent),var(--accent)) left top / 26px 2px no-repeat,linear-gradient(var(--accent),var(--accent)) left top / 2px 26px no-repeat,linear-gradient(var(--accent),var(--accent)) right top / 26px 2px no-repeat,linear-gradient(var(--accent),var(--accent)) right top / 2px 26px no-repeat,linear-gradient(var(--accent),var(--accent)) left bottom / 26px 2px no-repeat,linear-gradient(var(--accent),var(--accent)) left bottom / 2px 26px no-repeat,linear-gradient(var(--accent),var(--accent)) right bottom / 26px 2px no-repeat,linear-gradient(var(--accent),var(--accent)) right bottom / 2px 26px no-repeat; transition:opacity .3s var(--ease),transform .4s var(--ease);}
+  .project-guide-step-inner{position:relative; z-index:1; width:100%; display:flex; flex-direction:column; gap:10px; transition:transform .45s var(--ease);}
+  .project-guide-flow span{font-family:var(--sans); color:var(--accent); font-size:22px; font-weight:var(--weight-bold); letter-spacing:-.02em; line-height:1; transition:transform .45s var(--ease);}
+  .project-guide-flow strong{font-size:var(--type-body); font-weight:var(--weight-semibold); line-height:var(--leading-body); letter-spacing:0;}
+  .project-guide-step-copy{transition:transform .45s var(--ease);}
+  .project-guide-step-copy p{max-height:0; margin-top:0; opacity:0; overflow:hidden; transform:translateY(6px); color:var(--ink-soft); font-size:11px; font-weight:var(--weight-regular); line-height:1.65; transition:max-height var(--dur-base) var(--ease), margin-top var(--dur-base) var(--ease), opacity var(--dur-base) var(--ease), transform var(--dur-base) var(--ease);}
+  .project-guide-step:hover .project-guide-step-copy p,.project-guide-step:focus .project-guide-step-copy p,.project-guide-step:focus-visible .project-guide-step-copy p,.project-guide-step:focus-within .project-guide-step-copy p{max-height:80px; margin-top:8px; opacity:1; transform:translateY(0);}
+  .project-guide-step:focus,.project-guide-step:focus-visible{background-color:#fff; border-color:rgba(0,0,0,.18);}
+  .project-guide-step:focus .project-guide-step-inner,.project-guide-step:focus-visible .project-guide-step-inner{transform:translateY(-4px);}
+  .project-guide-step:focus .project-guide-step-number,.project-guide-step:focus-visible .project-guide-step-number{transform:translateY(-1px);}
+  .project-guide-step:focus .project-guide-step-copy,.project-guide-step:focus-visible .project-guide-step-copy{transform:translateY(-2px);}
+  .project-guide-step:focus::before,.project-guide-step:focus-visible::before{opacity:1; transform:scale(1);}
+  @media (hover:hover) and (pointer:fine){
+    .project-guide-step:hover{background-color:#fff; border-color:rgba(0,0,0,.18);}
+    .project-guide-step:hover .project-guide-step-inner{transform:translateY(-4px);}
+    .project-guide-step:hover .project-guide-step-number{transform:translateY(-1px);}
+    .project-guide-step:hover .project-guide-step-copy{transform:translateY(-2px);}
+    .project-guide-step:hover::before{opacity:1; transform:scale(1);}
+  }
+  .info-list{display:grid; grid-template-columns:1fr; list-style:none;}
+  .info-item{display:flex; gap:13px; align-items:flex-start; padding:22px 28px; border-bottom:1px solid var(--line); color:var(--ink-soft); font-size:var(--type-body); font-weight:var(--weight-regular); line-height:1.8;}
+  .info-item:last-child{border-bottom:0;}
+  .info-mark{display:grid; flex:0 0 22px; width:22px; height:22px; place-items:center; margin-top:1px; border:1px solid var(--accent); border-radius:50%; color:var(--accent); font-family:var(--sans); font-size:var(--type-label); font-weight:var(--weight-semibold);}
+  .delivery-guide{display:grid; grid-template-columns:auto 1fr; gap:18px; align-items:center; padding:24px 28px; border-bottom:1px solid var(--line); background:var(--bg-tint); transition:background .3s var(--ease), border-color .3s var(--ease), opacity .2s var(--ease), transform .2s var(--ease);}
+  .delivery-guide.is-updating{opacity:0; transform:translateY(4px);}
+  .delivery-icon{display:block; color:var(--accent); font-size:34px; line-height:1; transition:color .3s var(--ease);}
+  .delivery-copy span{display:block; color:var(--ink-faint); font-family:var(--sans); font-size:var(--type-label); font-weight:var(--weight-medium); letter-spacing:.1em; text-transform:uppercase;}
+  .delivery-copy strong{display:block; margin-top:3px; font-size:var(--type-body); font-weight:var(--weight-semibold); transition:color var(--dur-base) var(--ease);}
+  .delivery-copy p{margin-top:4px; color:var(--ink-soft); font-size:var(--type-small); font-weight:var(--weight-regular); line-height:1.7;}
+  .delivery-guide.timeline-priority{background:var(--bg-tint); border-color:var(--accent);}
+  .delivery-guide.timeline-priority .delivery-icon,.delivery-guide.timeline-priority .delivery-copy strong{color:var(--accent);}
+  .delivery-guide.timeline-offhours{background:var(--bg-subtle); border-color:var(--line-strong);}
+  .delivery-guide.timeline-offhours .delivery-icon,.delivery-guide.timeline-offhours .delivery-copy strong{color:var(--ink);}
+  .estimate-card{position:sticky; top:96px; background:var(--ink); color:#fff; padding:34px; border:1px solid var(--ink); transition:transform .28s var(--ease), box-shadow .28s var(--ease);}
+  .estimate-card:hover{transform:translateY(-3px); box-shadow:0 24px 60px rgba(0,0,0,.15);}
+  .estimate-card.pulse{animation:estimatePulse .35s var(--ease);}
+  @keyframes estimatePulse{50%{transform:scale(1.015);}}
+  .estimate-header{display:grid; grid-template-columns:minmax(0,1fr) minmax(150px,.85fr); gap:24px; align-items:start; margin-bottom:28px;}
+  .estimate-kicker{font-family:var(--sans); font-size:var(--type-label); font-weight:var(--weight-medium); letter-spacing:var(--tracking-label); color:var(--accent); text-transform:uppercase;}
+  .estimate-card h3{font-size:var(--type-card-title); font-weight:var(--weight-semibold); margin:9px 0 0;}
+  .estimate-rows{border-top:1px solid #3a3a3a; border-bottom:1px solid #3a3a3a; padding:17px 0; display:grid; gap:13px;}
+  .estimate-row{display:flex; justify-content:space-between; gap:18px; font-size:var(--type-small); font-weight:var(--weight-regular); color:#aaa;}
+  .estimate-row strong{font-family:var(--sans); color:#fff; font-weight:var(--weight-medium);}
+  .estimate-total{padding:24px 0 25px;}
+  .estimate-total span{font-size:var(--type-small); color:#aaa;}
+  .estimate-total strong{display:block; font-family:var(--sans); color:var(--accent); font-size:clamp(26px,3vw,40px); font-weight:var(--weight-bold); letter-spacing:-.02em; margin-top:7px;}
+  .estimate-consult-note{display:none; margin-top:7px; color:#f7b37d; font-size:12px; font-weight:600; letter-spacing:.01em;}
+  .estimate-consult-note.is-visible{display:block; animation:consultNoteIn .25s var(--ease);}
+  @keyframes consultNoteIn{from{opacity:0; transform:translateY(-3px);}to{opacity:1; transform:translateY(0);}}
+  .estimate-fields{display:grid; gap:10px;}
+  .estimate-fields label{display:grid; grid-template-columns:52px minmax(0,1fr); gap:10px; align-items:center; color:#aaa; font-size:var(--type-label);}
+  .estimate-fields label span{white-space:nowrap;}
+  .estimate-fields input{width:100%; min-width:0; border:0; border-bottom:1px solid #555; outline:0; background:transparent; color:#fff; padding:4px 0; font:inherit; font-size:var(--type-label);}
+  .estimate-fields input::placeholder{color:#666;}
+  .selected-block{border-top:1px solid #3a3a3a; padding-top:22px;}
+  .selected-block h4{font-size:var(--type-small); font-weight:var(--weight-medium); margin-bottom:14px; color:#aaa;}
+  .selected-list{list-style:none; display:grid; gap:9px; max-height:220px; overflow:auto;}
+  .selected-list li{font-size:var(--type-small); font-weight:var(--weight-regular); line-height:1.6; color:#ddd; display:flex; gap:9px;}
+  .selected-list li::before{content:'✓'; color:var(--accent);}
+  .estimate-cta{width:100%; margin-top:25px; display:flex; justify-content:space-between; align-items:center; border:0; background:var(--accent); color:#111; padding:16px 18px; cursor:pointer; font-family:var(--sans); font-size:13px; font-weight:var(--weight-semibold); letter-spacing:.04em; transition:var(--dur-fast) var(--ease);}
+  .estimate-cta:hover{background:#fff;}
+  .estimate-note{font-size:var(--type-label); font-weight:var(--weight-regular); line-height:1.7; color:#aaa; margin-top:14px;}
+  .mobile-estimate{display:none;}
+
+  /* ---------- FAQ ---------- */
+  .faq-list{border-top:1px solid var(--line);}
+  .faq-item{border-bottom:1px solid var(--line);}
+  .faq-q{
+    width:100%; text-align:left; background:none; border:none;
+    padding:26px 0; display:flex; justify-content:space-between; align-items:center;
+    cursor:pointer; font-size:17px; font-weight:var(--weight-semibold); color:var(--ink);
+  }
+  .faq-q .plus{font-size:20px; font-weight:400; transition:transform .35s var(--ease); color:var(--accent);}
+  .faq-item.open .plus{transform:rotate(45deg);}
+  .faq-a{
+    max-height:0; overflow:hidden; transition:max-height .4s var(--ease);
+  }
+  .faq-a p{padding-bottom:26px; font-size:var(--type-body); font-weight:var(--weight-regular); color:var(--ink-soft); max-width:640px; line-height:1.8;}
+
+  /* ---------- CONTACT ---------- */
+  .about-title{font-size:clamp(24px, 2.8vw, 42px); font-weight:var(--weight-semibold); margin:0; max-width:510px;}
+  .about-copy-wrap{margin-top:26px;}
+  .section-copy{margin-top:18px; color:var(--ink-soft); font-size:var(--type-body); font-weight:var(--weight-regular); line-height:1.8;}
+  .faq-wrap{max-width:840px;}
+
+  .contact{
+    background:var(--ink); color:#fff;
+    padding:150px 40px;
+    text-align:center;
+  }
+  .contact h2{
+    font-size:var(--type-section); font-weight:var(--weight-semibold); margin-top:0; letter-spacing:var(--tracking-title); line-height:var(--leading-title);
+  }
+  .contact-cta{
+    margin-top:44px; display:flex; gap:16px; justify-content:center; flex-wrap:wrap;
+  }
+  .btn{
+    font-family:var(--sans); font-size:13px; font-weight:var(--weight-medium); letter-spacing:.04em;
+    padding:16px 28px; display:inline-flex; align-items:center; gap:8px;
+    transition:transform .25s var(--ease), background .25s var(--ease), border-color .25s var(--ease);
+  }
+  .btn-primary{background:var(--accent); color:#fff;}
+  .btn-primary:hover{background:var(--ink); color:#fff; transform:translateY(-2px);}
+  .btn-ghost{border:1px solid rgba(255,255,255,.3); color:#fff;}
+  .btn-ghost:hover{background:rgba(255,255,255,.1); border-color:rgba(255,255,255,.55); transform:scale(1.015);}
+  .magnetic{will-change:transform;}
+
+  footer{
+    padding:30px 40px; display:flex; justify-content:space-between;
+    font-family:var(--sans); font-size:var(--type-small); font-weight:var(--weight-regular); color:var(--ink-faint);
+    border-top:1px solid var(--line);
+  }
+
+  @media (max-width:1100px){
+    .estimate-header{grid-template-columns:1fr; gap:18px;}
+  }
+
+  @media (max-width:900px){
+    .wrap{padding:0 24px;}
+    .hero{padding:96px 24px 72px;}
+    .hero-grid{grid-template-columns:1fr; gap:36px;}
+    .hero-visual{aspect-ratio:16/10;}
+    .about-grid{grid-template-columns:1fr; gap:40px;}
+    .estimate-layout{grid-template-columns:1fr;}
+    .estimate-card{position:relative; top:auto;}
+    .workflow{grid-template-columns:1fr;}
+    .rail{display:none;}
+    .step{grid-template-columns:44px minmax(0,1fr); gap:20px;}
+    .step-num{width:44px; height:44px; flex-basis:44px;}
+    header{padding:0 24px;}
+    .section{padding:var(--space-section-mobile) 0;}
+    .contact{padding:110px 24px;}
+  }
+  @media (max-width:640px){
+    .marquee-track{animation-duration:22s;}
+  }
+  @media (max-width:560px){
+    header{align-items:flex-start;}
+    header nav{display:grid; grid-template-columns:repeat(2,auto); gap:8px 14px; justify-content:end; text-align:right;}
+    .hero h1{font-size:clamp(28px, 10vw, 48px);}
+    .step{grid-template-columns:40px minmax(0,1fr); gap:16px;}
+    .step-num{width:40px; height:40px; flex-basis:40px; font-size:11px;}
+    h2{overflow-wrap:anywhere;}
+    .about-grid,.stat-list{min-width:0; width:100%;}
+    .stat-list{grid-template-columns:1fr;}
+    .project-guide-flow{grid-template-columns:1fr;}
+    .project-guide-flow li{min-height:0; padding:12px 20px; border-right:0; border-bottom:1px solid var(--line);}
+    .project-guide-flow li:last-child{border-bottom:0;}
+    .project-guide-step-inner{display:grid; grid-template-columns:40px minmax(0,1fr); align-items:baseline; gap:16px;}
+    .project-guide-step-copy p{max-height:none; margin-top:6px; opacity:1; overflow:visible; transform:none; font-size:12px;}
+    .selector-heading{padding:21px 20px; align-items:start; flex-direction:column; gap:5px;}
+    .choice{grid-template-columns:24px minmax(0,1fr) auto; gap:10px; padding:19px 20px;}
+    .choice-copy strong{font-size:14px;}
+    .choice-copy small{display:none;}
+    .choice-price{font-size:11px;}
+    .service-note,.info-item,.delivery-guide{padding-left:20px; padding-right:20px;}
+    .info-item{padding-top:18px; padding-bottom:18px; font-size:13px;}
+    .estimate-card{display:none;}
+    .mobile-estimate{display:flex; position:fixed; left:12px; right:12px; bottom:12px; z-index:50; background:var(--ink); color:#fff; padding:13px 16px; align-items:center; justify-content:space-between; box-shadow:0 14px 40px rgba(0,0,0,.3); border:1px solid #333;}
+    .mobile-estimate span{font-size:10px; color:#aaa; display:block;}
+    .mobile-estimate strong{font-size:18px; color:var(--accent); display:block; margin-top:2px;}
+    .mobile-estimate a{font-size:12px; background:var(--accent); color:#111; padding:11px 13px; font-weight:700;}
+  }
+  @media (hover:none){
+    .project-guide-step-inner,.project-guide-step-copy,.project-guide-step-number{transform:none;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{animation:none !important; transition:none !important;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <a href="#" class="brand">DD</a>
+  <nav>
+    <a href="#service-workflow">WORKFLOW</a>
+    <a href="#pricing">ESTIMATE</a>
+    <a href="#faq">FAQ</a>
+    <a href="#contact">CONTACT</a>
+  </nav>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-grid">
+    <div>
+      <span class="eyebrow reveal">Package Design Service</span>
+      <h1 class="reveal"><span class="hero-line-screen">디자인은 화면에서</span><span class="hero-line-field">패키지는 현장에서</span></h1>
+      <p class="reveal">브랜드와 생산을 함께 고려하는 패키지 디자인 서비스를 제공합니다.</p>
+    </div>
+    <div class="hero-visual reveal">
+      <div class="fbx-stage" role="img" aria-label="Fireball Packaging System 패키지 목업">
+        <div class="fbx-orbit" aria-hidden="true"></div>
+        <div class="fbx-object fbx-black">
+          <small>STUDIO / 01</small>
+          <strong>FORM<br>FOLLOWS<br><em>BRAND.</em></strong>
+          <span class="fbx-foot">PACKAGE DESIGN</span>
+        </div>
+        <div class="fbx-object fbx-orange">
+          <small>DAYOUNG</small><strong>ESSENTIAL</strong><b>02</b>
+        </div>
+        <div class="fbx-object fbx-bottle">
+          <div class="fbx-cap"></div>
+          <div class="fbx-label"><small>OBJECT</small><b>01</b></div>
+        </div>
+        <div class="fbx-caption"><span>SELECTED WORKS</span><span>2020 — 2026</span></div>
+      </div>
+    </div>
+    <div class="hero-cta-row reveal">
+      <span class="eyebrow hero-cta-label"><span>●</span>&nbsp;Design → Production → Launch</span>
+      <a href="#pricing" class="btn btn-primary magnetic">견적 문의하기 →</a>
+    </div>
+  </div>
+</section>
+
+<div class="marquee-strip">
+  <div class="marquee-track" id="marquee">
+    <span>디자인 전략 <i class="dot">·</i> 그래픽 개발 <i class="dot">·</i> 패키지 디자인 <i class="dot">·</i> 인쇄·후가공 아트워크 세팅 <i class="dot">·</i> 출시 지원 <i class="dot">·</i></span>
+    <span>디자인 전략 <i class="dot">·</i> 그래픽 개발 <i class="dot">·</i> 패키지 디자인 <i class="dot">·</i> 인쇄·후가공 아트워크 세팅 <i class="dot">·</i> 출시 지원 <i class="dot">·</i></span>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<section class="section" id="about">
+  <div class="wrap about-grid">
+    <div class="reveal">
+      <span class="eyebrow">ABOUT</span>
+      <h2 class="about-title">패키지는 보는 것이 아니라<br>만들어지는 것입니다.</h2>
+      <div class="about-copy about-copy-wrap">
+        <p>다양한 상업용 패키지 프로젝트와 OEM·ODM 협업을 경험했습니다. 컨셉 기획과 그래픽 개발뿐 아니라 생산 대응, 인쇄 감리, 양산 검수와 제품 출시까지 함께해 결과물이 도면에서 멈추지 않도록 합니다.</p>
+      </div>
+    </div>
+    <div class="stat-list reveal">
+      <div class="stat"><span class="num stat-counter" data-target="290" aria-label="290개 이상"><span class="counter-value" aria-hidden="true">290</span><span class="counter-suffix" aria-hidden="true">+</span></span><span class="label">상업용 패키지 디자인 프로젝트</span></div>
+      <div class="stat"><span class="num">OEM·ODM</span><span class="label">생산 협업 경험</span></div>
+      <div class="stat"><span class="num">Launch</span><span class="label">제품 출시 경험</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICE WORKFLOW -->
+<section class="section section-alt" id="service-workflow">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">WORKFLOW</span>
+      <h2>진행 프로세스</h2>
+    </div>
+    <div class="workflow">
+      <div class="rail">
+        <div class="rail-track"></div>
+        <div class="rail-fill" id="railFill"></div>
+      </div>
+      <div class="steps" id="steps">
+        <div class="step"><div class="step-num">01</div><div class="step-body"><h3>상담</h3><p>브랜드 현황, 제품 특성, 생산 방식과 요구사항을 파악하고 프로젝트 방향을 정합니다.</p></div></div>
+        <div class="step"><div class="step-num">02</div><div class="step-body"><h3>시장 조사</h3><p>시장과 경쟁 제품을 분석해 제품 포지셔닝과 디자인 방향의 근거를 세웁니다.</p></div></div>
+        <div class="step"><div class="step-num">03</div><div class="step-body"><h3>컨셉 기획</h3><p>브랜드 분석을 바탕으로 패키지 디자인 컨셉과 톤앤매너를 기획합니다.</p></div></div>
+        <div class="step"><div class="step-num">04</div><div class="step-body"><h3>디자인 개발</h3><p>컬러, 타이포그래피, 그래픽 요소와 패키지 구조를 고려해 실제 디자인을 개발합니다.</p></div></div>
+        <div class="step"><div class="step-num">05</div><div class="step-body"><h3>수정 및 검토</h3><p>클라이언트 피드백과 생산 조건을 함께 검토해 디자인을 수정·보완합니다.</p></div></div>
+        <div class="step"><div class="step-num">06</div><div class="step-body"><h3>인쇄·후가공 아트워크</h3><p>인쇄 색상, 별색, 화이트 인쇄, 후가공 레이어와 생산용 데이터를 사양에 맞게 정리합니다.</p></div></div>
+        <div class="step"><div class="step-num">07</div><div class="step-body"><h3>출시 지원</h3><p>인쇄 결과와 제품 적용 상태를 확인하고 출시 과정에서 발생하는 수정과 대응을 지원합니다.</p></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="section" id="pricing">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">ESTIMATE</span>
+      <h2>필요한 서비스를 선택해 보세요.</h2>
+      <p class="section-copy">프로젝트에 필요한 디자인과 지원 항목을 확인하고 선택할 수 있습니다.<br>선택한 서비스와 혜택은 예상 견적에 즉시 반영됩니다.</p>
+    </div>
+    <div class="estimate-layout reveal">
+      <div class="selector-panel" id="estimateForm">
+        <section class="selector-group" aria-labelledby="baseHeading">
+          <div class="selector-heading"><div><span>BASIC SERVICE</span><h3 id="baseHeading">기본 서비스</h3></div><p>모든 항목이 기본 선택되어 있습니다.</p></div>
+          <div class="choice-list" id="baseChoices"></div>
+          <p class="service-note"><b>Included</b><span>기본 서비스에는 디자인 시안, 기본 수정, 최종 인쇄용 AI · PDF 파일이 포함됩니다. 패키지 구조 설계는 구조도 제공 여부에 따라 선택할 수 있으며, 편집 가능한 AI 원본 파일과 인쇄·후가공 아트워크 세팅은 추가 옵션입니다.</span></p>
+        </section>
+        <section class="selector-group" aria-labelledby="optionHeading">
+          <div class="selector-heading"><div><span>OPTIONAL SERVICES</span><h3 id="optionHeading">추가 옵션</h3></div><p>필요한 항목만 추가할 수 있습니다.</p></div>
+          <div class="choice-list" id="optionChoices"></div>
+        </section>
+        <section class="selector-group" aria-labelledby="supportHeading">
+          <div class="selector-heading"><div><span>LAUNCH SUPPORT</span><h3 id="supportHeading">출시 지원</h3></div><p>한 가지 지원 기간을 선택해 주세요.</p></div>
+          <div class="choice-list" id="supportChoices"></div>
+        </section>
+        <section class="selector-group" aria-labelledby="discountHeading">
+          <div class="selector-heading"><div><span>DISCOUNTS</span><h3 id="discountHeading">할인 프로그램</h3></div><p>조건에 해당하는 혜택을 선택해 주세요.</p></div>
+          <div class="choice-list" id="discountChoices"></div>
+        </section>
+        <section class="selector-group info-card" id="workflow" aria-labelledby="guideHeading">
+          <div class="selector-heading"><div><span>PROJECT GUIDE</span><h3 id="guideHeading">프로젝트 안내</h3></div><p>프로젝트별 협의를 통해 범위를 정합니다.</p></div>
+          <ol class="project-guide-flow project-guide-animated" aria-label="프로젝트 진행 절차">
+            <li class="project-guide-step" tabindex="0">
+              <div class="project-guide-step-inner"><span class="project-guide-step-number">01</span><div class="project-guide-step-copy"><strong>견적 검토</strong><p>견적 내용과 요청 사항을 함께 확인하고 프로젝트 진행 가능 여부를 검토합니다.</p></div></div>
+            </li>
+            <li class="project-guide-step" tabindex="0">
+              <div class="project-guide-step-inner"><span class="project-guide-step-number">02</span><div class="project-guide-step-copy"><strong>프로젝트 범위 확정</strong><p>작업 범위와 일정, 필요한 산출물을 최종 확정합니다.</p></div></div>
+            </li>
+            <li class="project-guide-step" tabindex="0">
+              <div class="project-guide-step-inner"><span class="project-guide-step-number">03</span><div class="project-guide-step-copy"><strong>계약서 작성 및 계약금 입금</strong><p>계약서를 작성하고 계약금 입금 후 프로젝트를 준비합니다.</p></div></div>
+            </li>
+            <li class="project-guide-step" tabindex="0">
+              <div class="project-guide-step-inner"><span class="project-guide-step-number">04</span><div class="project-guide-step-copy"><strong>프로젝트 시작</strong><p>확정된 일정과 범위를 기준으로 디자인 작업을 시작합니다.</p></div></div>
+            </li>
+          </ol>
+          <div class="delivery-guide" id="timelineCard" aria-live="polite" aria-label="평균 작업 기간 안내">
+            <span class="delivery-icon" aria-hidden="true">◷</span>
+            <div class="delivery-copy"><span>평균 작업 기간</span><strong id="timelinePeriod">약 15–20 영업일</strong><p id="timelineDescription">빠른 출시가 필요한 경우 우선 작업 옵션을 선택해 주세요.</p></div>
+          </div>
+          <ul class="info-list" aria-label="프로젝트 안내 사항">
+            <li class="info-item"><span class="info-mark" aria-hidden="true">✓</span><span>프로젝트 범위에 따라 견적은 달라질 수 있습니다.</span></li>
+            <li class="info-item"><span class="info-mark" aria-hidden="true">✓</span><span>기본 수정 범위를 초과하는 작업은 프로젝트 범위에 따라 별도 협의를 통해 진행됩니다.</span></li>
+            <li class="info-item"><span class="info-mark" aria-hidden="true">✓</span><span>작업 기간은 프로젝트 규모에 따라 조정됩니다.</span></li>
+            <li class="info-item"><span class="info-mark" aria-hidden="true">✓</span><span>편집 가능한 AI 원본 파일과 작업 레이어는 ‘AI 원본 파일 제공’ 옵션 선택 시 제공됩니다.</span></li>
+            <li class="info-item"><span class="info-mark" aria-hidden="true">✓</span><span>생산 및 인쇄 일정은 협력 업체 일정에 따라 변동될 수 있습니다.</span></li>
+            <li class="info-item"><span class="info-mark" aria-hidden="true">✓</span><span>완성된 디자인은 계약된 제품과 브랜드의 사용 범위 내에서 사용할 수 있으며, 별도의 권리 양도가 필요한 경우 계약 단계에서 협의합니다.</span></li>
+            <li class="info-item"><span class="info-mark" aria-hidden="true">✓</span><span>PPWR 대응 컨설팅은 기준일 당시 공개된 규정과 가이드라인을 기준으로 진행됩니다.</span></li>
+          </ul>
+        </section>
+      </div>
+      <aside class="estimate-card" id="estimateCard" aria-live="polite">
+        <div class="estimate-header">
+          <div class="estimate-heading">
+            <span class="estimate-kicker">ESTIMATE</span>
+            <h3>예상 견적</h3>
+          </div>
+          <div class="estimate-fields">
+            <label><span>고객명</span><input id="estimateClient" placeholder="입력 선택"></label>
+            <label><span>브랜드명</span><input id="estimateBrand" placeholder="입력 선택"></label>
+          </div>
+        </div>
+        <div class="estimate-rows">
+          <div class="estimate-row"><span>기본 서비스</span><strong id="baseTotal">0원</strong></div>
+          <div class="estimate-row"><span>추가 옵션</span><strong id="optionTotal">0원</strong></div>
+          <div class="estimate-row"><span>출시 지원 조정</span><strong id="supportTotal">0원</strong></div>
+          <div class="estimate-row"><span>할인</span><strong id="discountTotal">0원</strong></div>
+        </div>
+        <div class="estimate-total"><span>최종 예상 견적</span><strong id="grandTotal">0원</strong><small class="estimate-consult-note" id="estimateConsultNote" aria-hidden="true">+ 별도 협의</small></div>
+        <div class="selected-block"><h4>선택한 서비스</h4><ul class="selected-list" id="selectedList"></ul></div>
+        <button type="button" class="estimate-cta" id="printEstimate">견적서 출력 <span>→</span></button>
+        <p class="estimate-note">본 금액은 예상 견적이며, 품목 수와 제작 범위에 따라 최종 금액이 달라질 수 있습니다. 별도 협의 항목은 합계에 포함되지 않습니다.</p>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<div class="mobile-estimate" aria-live="polite"><div><span>최종 예상 견적</span><strong id="mobileGrandTotal">0원</strong></div><a href="#pricing">견적 보기</a></div>
+
+<!-- FAQ -->
+<section class="section section-alt" id="faq">
+  <div class="wrap faq-wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">FAQ</span>
+      <h2>자주 묻는 질문</h2>
+    </div>
+    <div class="faq-list reveal" id="faqList">
+      <div class="faq-item">
+        <button class="faq-q">수정은 몇 번 가능한가요? <span class="plus">+</span></button>
+        <div class="faq-a"><p>기본 서비스에는 각 서비스별 기본 수정 횟수가 포함되어 있습니다. 기본 수정 범위를 초과하는 작업이나 방향 변경이 필요한 경우에는 프로젝트 범위에 따라 별도 협의를 통해 진행됩니다.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">인쇄도 진행하시나요? <span class="plus">+</span></button>
+        <div class="faq-a"><p>디자인과 함께 인쇄 감리, 컬러·재질 검수를 함께 진행하며, 필요 시 생산 협력사 연결까지 지원합니다.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">세금계산서 발행이 가능한가요? <span class="plus">+</span></button>
+        <div class="faq-a"><p>현재는 사업자등록 없이 개인 외주 형태로 진행하고 있어 세금계산서 및 현금영수증 발행이 불가능합니다.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">인쇄·후가공 아트워크도 제공되나요? <span class="plus">+</span></button>
+        <div class="faq-a"><p>최종 확정된 디자인의 인쇄용 AI · PDF 파일은 기본으로 제공합니다. 별색, 화이트 인쇄, 후가공 레이어 분리 등 생산 사양에 맞춘 작업이 필요한 경우에는 ‘인쇄·후가공 아트워크 세팅’ 옵션을 선택할 수 있습니다.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">무료 폰트는 어떻게 제공되나요? <span class="plus">+</span></button>
+        <div class="faq-a"><p>패키지 디자인에는 상업적 사용이 가능한 무료 폰트를 기준으로 사용합니다. AI 원본 파일 선택 시 라이선스상 재배포가 허용된 무료 폰트는 파일과 함께 제공하며, 제한된 폰트는 공식 다운로드 경로와 제작 당시의 라이선스 증빙 자료를 제공합니다.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact" id="contact">
+  <span class="eyebrow reveal">CONTACT</span>
+  <h2 class="reveal">당신의 패키지를<br>함께 만들어 보세요.</h2>
+  <div class="contact-cta reveal">
+    <a href="#" class="btn btn-primary magnetic" id="kakaoTalkLink" target="_blank" rel="noopener noreferrer">카카오톡으로 상담하기</a>
+    <a href="#" class="btn btn-ghost" id="portfolioLink">포트폴리오 보기 <span aria-hidden="true">→</span></a>
+  </div>
+</section>
+
+<footer id="siteFooter">
+  <span id="footerCopyright">© 2026 Kim Dayoung</span>
+  <span id="footerContact"></span>
+</footer>
+
+<script>
+gsap.registerPlugin(ScrollTrigger);
+
+// External portfolio link — update this constant if the portfolio URL changes.
+const PORTFOLIO_URL = 'https://portfolio-five-psi-0dumkffmm6.vercel.app/';
+// Replace this value with the KakaoTalk open chat, channel, or business URL when it is available.
+const KAKAO_TALK_URL = 'https://open.kakao.com/o/s8UeqxGi';
+const CONTACT = {
+  designer: 'Kim Dayoung',
+  brand: 'DD',
+  email: 'kdy17300@gmail.com',
+  phone: '010.2319.7759'
+};
+const ESTIMATE_SEQUENCE = 1;
+function formatDisplayDate(date) {
+  return `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, '0')}.${String(date.getDate()).padStart(2, '0')}`;
+}
+function createEstimateNumber(date = new Date(), sequence = ESTIMATE_SEQUENCE) {
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = String(date.getFullYear()).slice(-2);
+  const sequenceCode = String(sequence).padStart(2, '0');
+  return `${CONTACT.brand}-${day}${month}${year}${sequenceCode}`;
+}
+const portfolioLink = document.getElementById('portfolioLink');
+portfolioLink.href = PORTFOLIO_URL;
+portfolioLink.target = '_blank';
+portfolioLink.rel = 'noopener noreferrer';
+document.getElementById('kakaoTalkLink').href = KAKAO_TALK_URL;
+document.getElementById('footerCopyright').textContent = `© 2026 ${CONTACT.designer}`;
+document.getElementById('footerContact').textContent = `${CONTACT.email} · KakaoTalk mignon9473`;
+
+// Fade up + stagger reveals, per section
+document.querySelectorAll('.reveal').forEach((el) => {
+  gsap.fromTo(el, {opacity:0, y:28}, {
+    opacity:1, y:0, duration:1, ease:"power3.out",
+    scrollTrigger:{ trigger: el, start:"top 88%" }
+  });
+});
+
+// Stagger children inside grids
+document.querySelectorAll('.stat-list').forEach((grid)=>{
+  const items = grid.children;
+  gsap.fromTo(items, {opacity:0, y:20}, {
+    opacity:1, y:0, duration:.7, ease:"power2.out", stagger:.08,
+    scrollTrigger:{ trigger: grid, start:"top 85%" }
+  });
+});
+
+const counter = document.querySelector('.stat-counter');
+if (counter) {
+  const valueElement = counter.querySelector('.counter-value');
+  const target = Number(counter.dataset.target);
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (reducedMotion) {
+    valueElement.textContent = target;
+  } else {
+    const countState = {value:0};
+    gsap.to(countState, {
+      value:target,
+      duration:1.5,
+      ease:'power2.out',
+      scrollTrigger:{trigger:counter, start:'top 85%', once:true},
+      onUpdate:() => { valueElement.textContent = Math.round(countState.value); },
+      onComplete:() => { valueElement.textContent = target; }
+    });
+  }
+}
+
+const projectGuideSteps = document.querySelectorAll('.project-guide-animated .project-guide-step');
+if (projectGuideSteps.length) {
+  gsap.fromTo(projectGuideSteps, {opacity:0, y:20}, {
+    opacity:1,
+    y:0,
+    duration:.7,
+    ease:'power2.out',
+    stagger:.08,
+    scrollTrigger:{trigger:'.project-guide-animated', start:'top 85%'}
+  });
+}
+
+// Hero load sequence
+gsap.timeline({defaults:{ease:"power3.out", duration:1}})
+  .to(".hero .eyebrow", {opacity:1, y:0})
+  .to(".hero h1", {opacity:1, y:0}, "-=0.7")
+  .to(".hero p", {opacity:1, y:0}, "-=0.7")
+  .to(".hero-visual", {opacity:1, y:0}, "-=0.6")
+  .to(".hero-cta-row", {opacity:1, y:0}, "-=0.5");
+
+// Workflow rail progress + active step
+const steps = gsap.utils.toArray('.step');
+const railFill = document.getElementById('railFill');
+
+ScrollTrigger.create({
+  trigger: "#steps",
+  start: "top 60%",
+  end: "bottom 60%",
+  onUpdate: (self) => {
+    if(railFill) railFill.style.height = (self.progress*100) + "%";
+    const activeIndex = Math.min(steps.length-1, Math.floor(self.progress * steps.length));
+    steps.forEach((s,i)=> s.classList.toggle('active', i <= activeIndex));
+  }
+});
+
+// Interactive estimate — all pricing data is maintained here.
+const estimateData = {
+  base: [
+    {id:'printAiFiles', name:'최종 인쇄 파일 제공', price:0, checked:true, description:'최종 확정된 디자인을 인쇄할 수 있도록 폰트를 아웃라인 처리하고 이미지를 정리한 AI 및 PDF 파일을 제공합니다. 편집 가능한 작업 레이어, 생산처별 추가 사양 대응은 제외됩니다.'},
+    {id:'concept', name:'디자인 컨셉 기획', price:600000, checked:true, description:'브랜드 분석과 제품 포지셔닝을 기반으로 디자인 방향성을 기획합니다.'},
+    {id:'graphic', name:'패키지 그래픽 개발', price:1000000, checked:true, description:'브랜드의 컬러, 그래픽 요소, 패턴, 타이포그래피를 설계하여 패키지 전반에 적용될 그래픽 시스템을 구축합니다.'},
+    {id:'box', name:'단상자 패키지 디자인', price:500000, checked:true, description:'제품 구조와 진열 환경을 고려한 단상자 패키지를 디자인합니다.'},
+    {id:'label', name:'제품 라벨 디자인', price:400000, checked:true, description:'용기와 인쇄 조건에 맞는 제품 라벨을 디자인합니다.'}
+  ],
+  structureOptions: [
+    {id:'structureIncluded', name:'기본 패키지 구조 설계', price:300000, checked:true, description:'일반 단상자, 슬리브, 상·하박스 등의 기본 구조를 설계하거나 기존 칼선을 수정합니다. 라벨 제작에 필요한 기본 칼선 작업도 포함됩니다.'},
+    {id:'structureProvided', name:'클라이언트 구조도 제공', price:0, description:'생산처 또는 클라이언트가 사용 가능한 패키지 전개도와 칼선을 제공하는 경우 구조 설계 비용이 제외됩니다.'}
+  ],
+  options: [
+    {id:'artwork', name:'인쇄·후가공 아트워크 세팅', price:100000, description:'실제 생산 사양에 맞춰 인쇄 색상, 별색, 화이트 인쇄, 후가공, 칼선 등의 출력 요소를 레이어별로 구분하고 생산처 전달용 파일로 정리합니다.'},
+    {id:'mockup', name:'제품 목업 제작', price:100000, description:'제품 누끼 목업 1종과 브랜드 컨셉 이미지 1장을 제작하여 제품의 완성도와 전달력을 높입니다.'},
+    {id:'packageLogo', name:'패키지용 로고 디자인', price:500000, description:'확정된 브랜드 방향을 바탕으로 패키지에 적용할 기본 로고 또는 워드마크를 개발합니다. • 시안 2안 • 수정 5회 • AI · PDF · PNG 파일 제공'},
+    {id:'biSystem', name:'BI 시스템 개발', price:null, description:'브랜드 방향 설정부터 로고 체계, 컬러 시스템과 기본 응용 규정까지 브랜드 아이덴티티 전반을 개발합니다. 프로젝트 범위에 따라 별도 협의를 통해 진행됩니다.'},
+    {id:'printSupervision', name:'인쇄 감리', price:200000, description:'생산 과정에서 인쇄 상태 및 컬러를 확인하고 최종 생산 품질을 검수합니다.'},
+    {id:'colorProofing', name:'컬러 검수', price:100000, description:'실제 출력물의 컬러를 확인하고 색상 오차를 최소화하기 위한 검수 작업입니다.'},
+    {id:'ppwrConsulting', name:'PPWR 대응 컨설팅 (2026.08.15 기준)', price:100000, description:'2026년 8월 15일 기준 PPWR 규정과 공개 가이드라인을 바탕으로 DOC 준비 절차, 공급업체 요청 자료, 패키지 설계 시 확인해야 할 사항을 안내합니다. DOC 작성, 인증, 시험 진행 및 법적 적합성 판단, 기준일 이후 개정되는 규정은 본 서비스에 포함되지 않습니다.'},
+    {id:'specialStructure', name:'특수 패키지 구조 설계', price:null, description:'EVA, 스펀지 내장재, PET 블리스터, 프리미엄 기프트박스, 자석박스 등 특수 구조 설계를 진행합니다.'},
+    {id:'containerConsulting', name:'용기 선정 컨설팅', price:null, description:'제품 특성과 생산 환경에 적합한 용기 선택을 지원합니다.'},
+    {id:'detail', name:'제품 상세페이지 디자인', price:null, description:'제품 정보와 판매 채널에 맞춰 별도로 범위를 협의합니다.'},
+    {id:'guideline', name:'브랜딩 가이드 제작', price:null, description:'브랜드 운영 범위에 맞춰 가이드 항목을 별도로 협의합니다.'},
+    {id:'sourceAiFiles', name:'AI 원본 파일 제공', price:300000, description:'수정 가능한 AI 원본 파일과 작업 레이어, 연결 이미지를 제공합니다. 사용된 무료 폰트는 라이선스상 재배포가 허용되는 경우에만 포함하며, 프로젝트 완료 시 실제 사용 폰트의 라이선스 확인 자료를 별도 제공합니다.'},
+    {id:'priority', name:'우선 작업', price:100000, description:'협의된 일정 안에서 우선순위를 높여 집중 진행합니다.'}
+  ],
+  support: [
+    {id:'support30', name:'출시 지원 30일', price:0, checked:true, description:'출시 후 30일 동안 적용 과정, 인쇄 오류 확인 및 경미한 수정 사항을 지원합니다.'},
+    {id:'support14', name:'출시 지원 14일', price:-100000, description:'필수 적용 확인과 경미한 수정 사항을 14일 동안 지원합니다.'},
+    {id:'support0', name:'출시 지원 제외', price:-300000, description:'최종 데이터 전달과 함께 프로젝트를 종료합니다.'}
+  ],
+  discounts: [
+    {id:'launch', name:'런칭 프로모션', price:-200000, description:'서비스 오픈 기념 특별 혜택입니다.'},
+    {id:'referral', name:'지인 할인', price:-200000, description:'기존 인연 또는 소개를 통해 진행되는 프로젝트에 적용됩니다.'},
+    {id:'offhours', name:'업무 외 프로젝트 할인', price:-300000, description:'평일 저녁 및 주말 일정으로 진행 가능한 프로젝트에 적용됩니다.'},
+    {id:'portfolioConsent', name:'포트폴리오 공개 동의', price:-100000, description:'완료된 프로젝트를 개인 포트폴리오, 홈페이지 및 SNS에 공개할 수 있도록 동의해 주시는 경우 적용됩니다.'}
+  ]
+};
+
+const won = new Intl.NumberFormat('ko-KR');
+const money = (value) => `${value < 0 ? '-' : ''}${won.format(Math.abs(value))}원`;
+
+function createChoice(item, group, type='checkbox') {
+  const label = document.createElement('label');
+  label.className = 'choice';
+  const input = document.createElement('input');
+  input.type = type;
+  input.name = type === 'radio' ? group : item.id;
+  input.value = item.id;
+  input.dataset.group = group;
+  input.dataset.price = item.price ?? '';
+  input.checked = Boolean(item.checked);
+  const priceLabel = item.price === null ? '별도 협의' : money(item.price);
+  label.innerHTML = `<span class="control" aria-hidden="true"></span><span class="choice-copy"><strong>${item.name}</strong><small>${item.description}</small></span><span class="choice-price ${item.price < 0 ? 'minus' : ''}">${priceLabel}</span>`;
+  label.prepend(input);
+  return label;
+}
+
+function renderChoices() {
+  const renderList = (target, items, group, type) => {
+    const container = document.getElementById(target);
+    items.forEach(item => container.appendChild(createChoice(item, group, type)));
+  };
+  renderList('baseChoices', estimateData.base, 'base', 'checkbox');
+  renderList('baseChoices', estimateData.structureOptions, 'base', 'radio');
+  renderList('optionChoices', estimateData.options, 'options', 'checkbox');
+  renderList('supportChoices', estimateData.support, 'support', 'radio');
+  renderList('discountChoices', estimateData.discounts, 'discounts', 'checkbox');
+}
+
+function getItemsForGroup(group) {
+  if (group === 'options') return estimateData.options;
+  if (group === 'base') return [...estimateData.base, ...estimateData.structureOptions];
+  return estimateData[group];
+}
+
+function getSelectedEstimateItems() {
+  return [...document.querySelectorAll('#estimateForm input:checked')]
+    .map(input => {
+      const group = input.dataset.group;
+      const item = getItemsForGroup(group).find(entry => entry.id === input.value);
+      return item ? {group, item} : null;
+    })
+    .filter(Boolean);
+}
+
+function getEstimateResult() {
+  const selectedItems = getSelectedEstimateItems();
+  const totals = {base:0, options:0, support:0, discounts:0};
+  selectedItems.forEach(({group, item}) => { if (item.price !== null) totals[group] += item.price; });
+  const issueDateObject = new Date();
+  const validDateObject = new Date(issueDateObject);
+  validDateObject.setDate(validDateObject.getDate() + 30);
+  return {
+    selectedItems,
+    totals,
+    finalTotal: totals.base + totals.options + totals.support + totals.discounts,
+    consultRequired: isConsultRequired(selectedItems.map(({item}) => item)),
+    timeline: timelineStates[getTimelineState()],
+    issueDateObject,
+    issueDate: formatDisplayDate(issueDateObject),
+    validUntil: formatDisplayDate(validDateObject),
+    estimateNumber: createEstimateNumber(issueDateObject, ESTIMATE_SEQUENCE)
+  };
+}
+
+// Timeline state is presentation-only: it never changes the estimate total.
+const timelineStates = {
+  normal: {
+    period: '약 15–20 영업일',
+    description: '빠른 출시가 필요한 경우 우선 작업 옵션을 선택해 주세요.',
+    className: ''
+  },
+  priority: {
+    period: '약 10–15 영업일',
+    description: '우선순위를 높여 가능한 일정 내에서 먼저 진행합니다.',
+    className: 'timeline-priority'
+  },
+  offhours: {
+    period: '약 5–7주',
+    description: '업무 외 시간을 활용하여 진행되므로 일반 프로젝트보다 작업 기간이 길어질 수 있습니다.',
+    className: 'timeline-offhours'
+  }
+};
+
+let activeTimelineState = null;
+let timelineUpdateTimer = null;
+function getTimelineState() {
+  if (document.querySelector('#estimateForm input[value="offhours"]:checked')) return 'offhours';
+  if (document.querySelector('#estimateForm input[value="priority"]:checked')) return 'priority';
+  return 'normal';
+}
+
+function updateTimeline(animate = true) {
+  const nextState = getTimelineState();
+  if (nextState === activeTimelineState) return;
+  activeTimelineState = nextState;
+  const card = document.getElementById('timelineCard');
+  const period = document.getElementById('timelinePeriod');
+  const description = document.getElementById('timelineDescription');
+  const applyState = () => {
+    const state = timelineStates[nextState];
+    period.textContent = state.period;
+    description.textContent = state.description;
+    card.classList.remove('timeline-priority', 'timeline-offhours');
+    if (state.className) card.classList.add(state.className);
+    requestAnimationFrame(() => card.classList.remove('is-updating'));
+  };
+  if (!animate) {
+    applyState();
+    return;
+  }
+  if (timelineUpdateTimer) window.clearTimeout(timelineUpdateTimer);
+  card.classList.add('is-updating');
+  timelineUpdateTimer = window.setTimeout(applyState, 180);
+}
+
+function enforceWorkingMode(target) {
+  if (!target.checked) return;
+  if (target.value === 'priority') {
+    document.querySelector('#estimateForm input[value="offhours"]').checked = false;
+  }
+  if (target.value === 'offhours') {
+    document.querySelector('#estimateForm input[value="priority"]').checked = false;
+  }
+}
+
+let displayedTotal = null;
+let totalTween = null;
+function animateTotal(target) {
+  if (displayedTotal === null) {
+    const text = money(target);
+    document.getElementById('grandTotal').textContent = text;
+    document.getElementById('mobileGrandTotal').textContent = text;
+    displayedTotal = target;
+    return;
+  }
+  if (totalTween) totalTween.kill();
+  const start = displayedTotal;
+  const state = {value:start};
+  totalTween = gsap.to(state, {value:target, duration:.5, ease:'power2.out', onUpdate:()=>{
+    const text = money(Math.round(state.value / 1000) * 1000);
+    document.getElementById('grandTotal').textContent = text;
+    document.getElementById('mobileGrandTotal').textContent = text;
+  }, onComplete:()=>{displayedTotal=target;}});
+}
+
+function isConsultRequired(selectedItems) {
+  return selectedItems.some(item => item.price === null);
+}
+
+function updateConsultationStatus(required) {
+  const note = document.getElementById('estimateConsultNote');
+  note.classList.toggle('is-visible', required);
+  note.setAttribute('aria-hidden', String(!required));
+}
+
+function calculateEstimate() {
+  const result = getEstimateResult();
+  const {totals, selectedItems, finalTotal: total, consultRequired} = result;
+  const names = [];
+  selectedItems.forEach(({item}) => {
+    names.push(item.name + (item.price === null ? ' · 별도 협의' : ''));
+  });
+  document.getElementById('baseTotal').textContent = money(totals.base);
+  document.getElementById('optionTotal').textContent = money(totals.options);
+  document.getElementById('supportTotal').textContent = money(totals.support);
+  document.getElementById('discountTotal').textContent = money(totals.discounts);
+  document.getElementById('selectedList').innerHTML = names.map(name => `<li>${name}</li>`).join('');
+  animateTotal(total);
+  updateConsultationStatus(consultRequired);
+  const card = document.getElementById('estimateCard');
+  card.classList.remove('pulse');
+  void card.offsetWidth;
+  card.classList.add('pulse');
+}
+
+const escapeHtml = (value) => String(value).replace(/[&<>'"]/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char]));
+
+function createPrintRows(items) {
+  return items.map(({item}) => `<tr><td>${escapeHtml(item.name)}</td><td>${item.price === null ? '별도 협의' : money(item.price)}</td></tr>`).join('');
+}
+
+function createPrintSection(title, items) {
+  if (!items.length) return '';
+  return `<section class="print-section"><h2>${title}</h2><table><tbody>${createPrintRows(items)}</tbody></table></section>`;
+}
+
+function buildEstimatePrintDocument() {
+  const result = getEstimateResult();
+  const {selectedItems: selected, totals, finalTotal: total, consultRequired, timeline, issueDate: date, validUntil, estimateNumber} = result;
+  const client = escapeHtml(document.getElementById('estimateClient').value || '-');
+  const brand = escapeHtml(document.getElementById('estimateBrand').value || '-');
+  const sections = [
+    createPrintSection('Basic Service', selected.filter(entry => entry.group === 'base')),
+    createPrintSection('추가 옵션', selected.filter(entry => entry.group === 'options' && entry.item.price !== null)),
+    createPrintSection('출시 지원', selected.filter(entry => entry.group === 'support')),
+    createPrintSection('Discount', selected.filter(entry => entry.group === 'discounts')),
+    createPrintSection('별도 협의', selected.filter(entry => entry.item.price === null))
+  ].join('');
+  return `<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>${CONTACT.brand} Estimate ${estimateNumber}</title><style>
+    @page{size:A4;margin:0}
+    *{box-sizing:border-box}
+    body{margin:0;background:#f2f2ef;color:#171717;font-family:Arial,"Pretendard",sans-serif}
+    .page{position:relative;display:flex;flex-direction:column;width:210mm;min-height:297mm;margin:0 auto;padding:20mm;background:#fff}
+    .top{display:flex;justify-content:space-between;gap:24px;padding-bottom:4mm}
+    .eyebrow{margin:0;color:#c45a10;font-size:9px;font-weight:700;letter-spacing:.13em;text-transform:uppercase}
+    .title{margin:7px 0 3px;font-size:30px;letter-spacing:-.05em}
+    .meta{min-width:67mm;margin:0;display:grid;gap:7px;font-size:10px}
+    .meta div{display:grid;grid-template-columns:72px 1fr;column-gap:14px}.meta dt{color:#777}.meta dd{margin:0;text-align:left}
+    .print-section{margin-top:11mm}.top + .print-section{margin-top:5mm}.print-section h2{margin:0;padding-bottom:5px;border-bottom:1px solid #222;font-size:12px;letter-spacing:.02em}
+    table{width:100%;border-collapse:collapse}td{padding:8px 0;border-bottom:1px solid #e4e4e1;font-size:11px}td:last-child{text-align:right;font-weight:600}
+    .summary{margin-top:12mm;padding:7mm;background:#fff;border:2px solid #f97316;border-radius:12px;color:#171717}.estimate-summary-row{display:flex;justify-content:space-between;align-items:baseline;gap:16px;font-size:10px}.estimate-summary-row .label{color:#171717;text-align:left}.estimate-summary-row .value{color:#171717;text-align:right;font-variant-numeric:tabular-nums}.estimate-summary-total .label{color:#171717;font-size:11px;font-weight:700}.estimate-summary-total .value{color:#f97316;font-size:27px;font-weight:700;letter-spacing:-.04em}.consult{margin-top:5px;color:#f97316;text-align:right;font-size:11px;font-weight:700}.timeline{margin-top:5mm}
+    .notes{display:grid;grid-template-columns:minmax(0,13fr) minmax(0,7fr);gap:10mm;align-items:stretch;margin-top:auto;padding-top:18px;border-top:1px solid #d9d9d9;font-size:10px;line-height:1.65;color:#555}.notes h2{margin:0 0 5px;color:#171717;font-size:11px}.notes p{margin:0}
+    .signature{align-self:end;display:flex;flex-direction:column;align-items:flex-end;text-align:right;color:#777;font-size:9px;line-height:1.6}.signature-message{margin:0 0 4mm;color:#333;font-size:10px;font-weight:600}.signature-name{margin:0;color:#171717;font-size:10px;font-weight:700}.signature-role{margin:0;color:#777}.signature-contact{margin:3mm 0 0}
+    @media print{body{background:#fff}.page{margin:0}}@media screen{.page{box-shadow:0 12px 35px rgba(0,0,0,.12)}}
+  </style></head><body><main class="page"><header class="top"><div><p class="eyebrow">${CONTACT.brand}</p><h1 class="title">Package Design Estimate</h1></div><dl class="meta"><div><dt>발행일</dt><dd>${date}</dd></div><div><dt>견적번호</dt><dd>${estimateNumber}</dd></div><div><dt>고객명</dt><dd>${client}</dd></div><div><dt>브랜드명</dt><dd>${brand}</dd></div><div><dt>유효기간</dt><dd>${validUntil}까지</dd></div></dl></header>${sections}<section class="summary"><div class="estimate-summary-row estimate-summary-total"><span class="label">최종 예상 견적</span><strong class="value">${money(total)}</strong></div>${consultRequired ? '<div class="consult">+ 별도 협의</div>' : ''}<div class="estimate-summary-row timeline"><span class="label">예상 작업기간</span><span class="value">${timeline.period}</span></div></section><section class="notes"><div class="notes-copy"><h2>Notes</h2><p>본 견적서는 선택한 서비스 항목을 기준으로 자동 계산된 예상 견적입니다. 프로젝트의 품목 수, 제작 범위와 생산 조건에 따라 최종 금액은 변경될 수 있습니다.<br>별도 협의 항목은 최종 예상 견적 합계에 포함되지 않습니다.<br>디자인 사용 범위와 권리 관련 사항은 최종 계약 내용을 기준으로 합니다.${selected.some(({item}) => item.id === 'ppwrConsulting') ? '<br>PPWR 대응 컨설팅은 2026년 8월 15일 기준 공개된 PPWR 규정 및 가이드라인을 기반으로 제공됩니다.<br>DOC 작성, 시험·인증, 법적 적합성 판단 및 이후 개정되는 규정에 대한 대응은 본 서비스에 포함되지 않습니다.<br>PPWR 규정은 지속적으로 개정될 수 있으므로 본 서비스는 기준일 당시의 공개 자료를 기준으로 제공합니다.' : ''}</p></div><aside class="signature"><p class="signature-message">함께 좋은 제품을 만들어 보겠습니다.</p><p class="signature-name">${CONTACT.designer}</p><p class="signature-role">Package Designer</p><p class="signature-contact">${CONTACT.email}<br>${CONTACT.phone}</p></aside></section></main></body></html>`;
+}
+
+function printEstimate() {
+  const printWindow = window.open('', '_blank', 'width=900,height=1100');
+  if (!printWindow) return;
+  printWindow.document.write(buildEstimatePrintDocument());
+  printWindow.document.close();
+  printWindow.focus();
+  window.setTimeout(() => printWindow.print(), 250);
+}
+
+renderChoices();
+document.getElementById('estimateForm').addEventListener('change', (event) => {
+  enforceWorkingMode(event.target);
+  calculateEstimate();
+  updateTimeline();
+});
+calculateEstimate();
+updateTimeline(false);
+document.getElementById('printEstimate').addEventListener('click', printEstimate);
+
+// FAQ accordion
+document.querySelectorAll('.faq-item').forEach((item)=>{
+  const q = item.querySelector('.faq-q');
+  const a = item.querySelector('.faq-a');
+  q.addEventListener('click', ()=>{
+    const isOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item.open').forEach((openItem)=>{
+      if(openItem !== item){
+        openItem.classList.remove('open');
+        openItem.querySelector('.faq-a').style.maxHeight = null;
+      }
+    });
+    if(isOpen){
+      item.classList.remove('open');
+      a.style.maxHeight = null;
+    } else {
+      item.classList.add('open');
+      a.style.maxHeight = a.scrollHeight + "px";
+    }
+  });
+});
+
+// Magnetic buttons
+document.querySelectorAll('.magnetic').forEach((btn)=>{
+  btn.addEventListener('mousemove', (e)=>{
+    const r = btn.getBoundingClientRect();
+    const x = e.clientX - r.left - r.width/2;
+    const y = e.clientY - r.top - r.height/2;
+    gsap.to(btn, {x:x*0.3, y:y*0.4, duration:.4, ease:"power2.out"});
+  });
+  btn.addEventListener('mouseleave', ()=>{
+    gsap.to(btn, {x:0, y:0, duration:.5, ease:"elastic.out(1,0.4)"});
+  });
+});
+</script>
+
+</body>
+</html>
